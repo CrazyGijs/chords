@@ -84,7 +84,7 @@ class Music(commands.Cog):
             play_embed = discord.Embed(title=f"Now playing", color=discord.Color.blue(),
                                        value=f":arrow_forward: Playing **{self.music_queue[0][0]['title']}** -- "
                                              f"requested by {self.music_queue[0][2]}")
-            await ctx.send(play_embed)
+            await ctx.send(embed=play_embed)
 
             self.vc.play(
                 discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS),
@@ -117,7 +117,7 @@ class Music(commands.Cog):
                 queue_embed = discord.Embed(title=f"Queue", color=discord.Color.blue(),
                                            value=f':headphones: **{song["title"]}** has '
                                                  f'been added to the queue by {ctx.author.mention}')
-                await ctx.send(queue_embed)
+                await ctx.send(embed=queue_embed)
                 self.music_queue.append(
                     [song, voice_channel, ctx.author.mention])
 
