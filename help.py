@@ -36,7 +36,7 @@ class Help(commands.Cog):
                     command.aliases) > 0 else "None"
             )
             cog_help_embed.add_field(
-                name=(f"_{command.name} , {command_aliases}") if (
+                name=(f"-{command.name} , {command_aliases}") if (
                     command_aliases != "None") else (f"_{command.name}"),
                 value=f"`{command.help}`",
                 inline=False,
