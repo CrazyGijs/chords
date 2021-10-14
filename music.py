@@ -18,7 +18,7 @@ class Music(commands.Cog):
         self.music_queue = []
         self.skip_votes = set()
 
-        self.YDL_OPTIONS = {"format": "bestaudio", "noplaylist": "True"}
+        self.YDL_OPTIONS = {"format": "bestaudio", "noplaylist": "True", "cookiefile": "cookies.txt"}
         self.FFMPEG_OPTIONS = {
             "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
             "options": "-vn",
