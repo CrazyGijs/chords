@@ -76,14 +76,15 @@ class Music(commands.Cog):
 
             m_url = self.music_queue[0][0]["source"]
 
-            if self.vc == "" or not self.vc.is_connected() or self.vc == None:
+            if self.vc == "" or not self.vc.is_connected() or self.vc is None:
                 self.vc = await self.music_queue[0][1].connect()
             else:
                 await self.vc.move_to(self.music_queue[0][1])
 
-            await ctx.send(
-                f""":arrow_forward: Playing **{self.music_queue[0][0]['title']}** -- requested by {self.music_queue[0][2]}"""
-            )
+            play_embed = discord.Embed(title=f"Now playing", color=discord.Color.blue(),
+                                       value=f":arrow_forward: Playing **{self.music_queue[0][0]['title']}** -- "
+                                             f"requested by {self.music_queue[0][2]}")
+            await ctx.send(play_embed)
 
             self.vc.play(
                 discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS),
@@ -113,13 +114,14 @@ class Music(commands.Cog):
                     "Could not download the song. Incorrect format try another keyword."
                 )
             else:
-                await ctx.send(
-                    f""":headphones: **{song["title"]}** has been added to the queue by {ctx.author.mention}"""
-                )
+                queue_embed = discord.Embed(title=f"Queue", color=discord.Color.blue(),
+                                           value=f':headphones: **{song["title"]}** has '
+                                                 f'been added to the queue by {ctx.author.mention}')
+                await ctx.send(queue_embed)
                 self.music_queue.append(
                     [song, voice_channel, ctx.author.mention])
 
-                if self.is_playing == False:
+                if self.is_playing is False:
                     await self.play_music(ctx)
 
     @commands.command(
@@ -128,7 +130,8 @@ class Music(commands.Cog):
         aliases=["playing"],
     )
     async def cp(self, ctx):
-        msg = "No music playing" if self.current_song is None else f"""Currently Playing: **{self.current_song[0]['title']}** -- added by {self.current_song[2]}\n"""
+        msg = "No music playing" if self.current_song is None else f"""Currently Playing: 
+        **{self.current_song[0]['title']}** -- added by {self.current_song[2]}\n"""
         await ctx.send(msg)
     
     @commands.command(
@@ -236,7 +239,7 @@ class Music(commands.Cog):
                         f":headphones: **{song['title']}** will be played add the end of the queue!"
                     )
 
-                if self.is_playing == False or (
+                if self.is_playing is False or (
                     self.vc == "" or not self.vc.is_connected() or self.vc == None
                 ):
                     await self.play_music(ctx)

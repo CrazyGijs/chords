@@ -22,10 +22,7 @@ class Help(commands.Cog):
                                               color=discord.Color.red())
             return await ctx.send(embed=query_error_embed)
 
-        cog_help_embed = discord.Embed(
-            title=f"Bot Commands",
-            color=discord.Color.blue(),
-        )
+        cog_help_embed = discord.Embed(title=f"Bot Commands", color=discord.Color.blue())
 
         for command in cog.get_commands():
             command_aliases = (f"{', '.join(command.aliases)}" if len(command.aliases) > 0 else "None")
