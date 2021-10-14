@@ -81,9 +81,8 @@ class Music(commands.Cog):
             else:
                 await self.vc.move_to(self.music_queue[0][1])
 
-            play_embed = discord.Embed(title=f"Now playing", color=discord.Color.blue())
-            play_embed.add_field(name='', value=f":arrow_forward: Playing **{self.music_queue[0][0]['title']}** -- "
-                                 f"requested by {self.music_queue[0][2]}")
+            play_embed = discord.Embed(title=f"Now playing", description=f":arrow_forward: Playing **{self.music_queue[0][0]['title']}** -- "
+                                 f"requested by {self.music_queue[0][2]}", color=discord.Color.blue())
             await ctx.send(embed=play_embed)
 
             self.vc.play(
@@ -114,9 +113,8 @@ class Music(commands.Cog):
                     "Could not download the song. Incorrect format try another keyword."
                 )
             else:
-                queue_embed = discord.Embed(title=f"Queue", color=discord.Color.blue())
-                queue_embed.add_field(name='', value=f':headphones: **{song["title"]}** has '
-                                      f'been added to the queue by {ctx.author.mention}')
+                queue_embed = discord.Embed(title=f"Queue", description=f':headphones: **{song["title"]}** has '
+                                      f'been added to the queue by {ctx.author.mention}', color=discord.Color.blue())
                 await ctx.send(embed=queue_embed)
                 self.music_queue.append(
                     [song, voice_channel, ctx.author.mention])
