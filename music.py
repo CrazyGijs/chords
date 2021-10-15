@@ -13,7 +13,6 @@ guild_id = [378542493547102209]
 
 class Music(commands.Cog):
     def __init__(self, bot: Bot):
-        super().__init__(help_command=None)
         self.bot = bot
 
         self.is_playing = False
