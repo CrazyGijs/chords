@@ -11,12 +11,12 @@ class Help(commands.Cog):
 
     # @commands.command(name="help", aliases=["h"])
     @cog_ext.cog_slash(name="help", description="Show main commands of Mr. Proper")
-    async def _help(self, ctx, cog_query: str = "Music"):
+    async def _help(self, ctx):  # , cog_query: str = "Music"):
         """Returns all not hidden commands from a cog.
         Default query is set to 'Music' but other cogs are supported too"""
 
         try:
-            cog = self.bot_cogs[cog_query]
+            cog = self.bot_cogs["Music"]
         except KeyError:
             query_error_embed = discord.Embed(title="Query Error. Perhaps you mean:",
                                               description=f"{', '.join(self.bot_cogs.keys())}.",
