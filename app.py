@@ -15,7 +15,7 @@ intents.members = True
 # bot.remove_command("help")
 with open('prefix.txt', 'r') as fp:
     prefix = fp.read()
-bot = commands.Bot(command_prefix=prefix, self_bot=True, help_command=False, intents=intents)
+bot = commands.Bot(command_prefix=prefix, self_bot=True, intents=intents)
 slash = SlashCommand(bot, sync_commands=True)
 # bot.remove_command('help')
 bot.add_cog(Music(bot))
