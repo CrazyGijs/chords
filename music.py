@@ -78,8 +78,9 @@ class Music(commands.Cog):
             else:
                 await self.vc.move_to(self.music_queue[0][1])
 
-            play_embed = discord.Embed(title=f"Now playing", description=f":arrow_forward: Playing **{self.music_queue[0][0]['title']}** -- "
-                                 f"requested by {self.music_queue[0][2]}", color=discord.Color.blue())
+            play_embed = discord.Embed(title=f"Now playing",
+                                       description=f":arrow_forward: Playing **{self.music_queue[0][0]['title']}** -- "
+                                                   f"requested by {self.music_queue[0][2]}", color=discord.Color.blue())
             await ctx.send(embed=play_embed)
 
             self.vc.play(
@@ -108,12 +109,12 @@ class Music(commands.Cog):
             if type(song) == type(True):
                 await ctx.send("Could not download the song. Incorrect format try another keyword.")
             else:
-                queue_embed = discord.Embed(title=f"Queue", description=f':headphones: **{song["title"]}** has '
-                                      f'been added to the queue by {ctx.author.mention}', color=discord.Color.blue())
+                queue_embed = discord.Embed(title=f"Queue",
+                                            description=f':headphones: **{song["title"]}** has been added to the queue '
+                                                        f'by {ctx.author.mention}', color=discord.Color.blue())
+                self.music_queue.append([song, voice_channel, ctx.author.mention])
+                # if len(self.music_queue) > 1:
                 await ctx.send(embed=queue_embed)
-                self.music_queue.append(
-                    [song, voice_channel, ctx.author.mention])
-
                 if self.is_playing is False:
                     await self.play_music(ctx)
 
@@ -138,9 +139,12 @@ class Music(commands.Cog):
             retval += f"""{i+1}. **{m[0]['title']}** -- added by {m[2]}\n"""
 
         if retval != "":
-            await ctx.send(retval)
+            embed_return = discord.Embed(title="Queue", description=retval)
+            await ctx.send(embed=embed_return)
         else:
-            await ctx.send("No music in queue")
+            q_ret = discord.Embed(title=f"Queue",
+                                        description="No music in queue", color=discord.Color.blue())
+            await ctx.send(embed=q_ret)
 
     @commands.command(name="cq", help="Clears the queue", aliases=["clear"])
     async def cq(self, ctx):
