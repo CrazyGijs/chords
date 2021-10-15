@@ -140,10 +140,11 @@ class Music(commands.Cog):
 
         if retval != "":
             embed_return = discord.Embed(title="Queue", description=retval)
-            await ctx.send(embed_return)
+            await ctx.send(embed=embed_return)
         else:
-            await ctx.send(discord.Embed(title=f"Queue",
-                                         description="No music in queue", color=discord.Color.blue()))
+            q_ret = discord.Embed(title=f"Queue",
+                                        description="No music in queue", color=discord.Color.blue())
+            await ctx.send(embed=q_ret)
 
     @commands.command(name="cq", help="Clears the queue", aliases=["clear"])
     async def cq(self, ctx):
