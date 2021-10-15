@@ -154,10 +154,11 @@ class Music(commands.Cog):
         shuffle(self.music_queue)
         await ctx.send("""***Queue shuffled !***""")
 
-    @commands.command(
-        name="s", help="Skips the current song being played", aliases=["skip"]
-    )
-    async def skip(self, ctx):
+    # @commands.command(
+    #     name="s", help="Skips the current song being played", aliases=["skip"]
+    # )
+    @cog_ext.cog_slash(name="skip", description="Skips the current song being played", guild_ids=guild_id)
+    async def _skip(self, ctx):
         if self.vc != "" and self.vc:
             await ctx.send("""***Skipped current song !***""")
             self.skip_votes = set()
@@ -179,13 +180,16 @@ class Music(commands.Cog):
             await ctx.send(f"Vote passed by majority ({votes}/{num_members}).")
             await self.skip(ctx)
 
-    @commands.command(
-        name="l",
-        help="Commands the bot to leave the voice channel \U0001F634",
-        aliases=["leave"],
-    )
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def leave(self, ctx, *args):
+    # @commands.command(
+    #     name="l",
+    #     help="Commands the bot to leave the voice channel \U0001F634",
+    #     aliases=["leave"],
+    # )
+
+    # @cog_ext.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="leave", description="Commands the bot to leave the voice channel \U0001F634",
+                       guild_ids=guild_id)
+    async def _leave(self, ctx):
         if self.vc.is_connected():
             await ctx.send("""**Tschüss**""")
             await self.vc.disconnect(force=True)
