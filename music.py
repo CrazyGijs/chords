@@ -112,11 +112,10 @@ class Music(commands.Cog):
                 queue_embed = discord.Embed(title=f"Queue",
                                             description=f':headphones: **{song["title"]}** has been added to the queue '
                                                         f'by {ctx.author.mention}', color=discord.Color.blue())
-                # self.music_queue) > 0:
-                await ctx.send(embed=queue_embed)
                 self.music_queue.append(
                     [song, voice_channel, ctx.author.mention])
-
+                if len(self.music_queue) > 0:
+                    await ctx.send(embed=queue_embed)
                 if self.is_playing is False:
                     await self.play_music(ctx)
 
