@@ -96,8 +96,8 @@ class Music(commands.Cog):
             self.current_song = None
 
     @cog_ext.cog_slash(name="play", description="Plays a selected song from youtube \U0001F3B5", guild_ids=guild_id)
-    async def _play(self, ctx, input):  # ctx: SlashContext,
-        query = "".join(input)
+    async def _p(self, ctx, search):  # ctx: SlashContext,
+        query = "".join(search)
 
         voice_channel = ctx.author.voice.channel
         if voice_channel is None:
