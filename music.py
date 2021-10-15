@@ -19,11 +19,8 @@ class Music(commands.Cog):
         self.skip_votes = set()
 
         self.YDL_OPTIONS = {"format": "bestaudio", "noplaylist": "True", "cookiefile": "cookies.txt"}
-        self.FFMPEG_OPTIONS = {
-            "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
-            "options": "-vn",
-        }
-
+        self.FFMPEG_OPTIONS = {"before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
+                               "options": "-vn"}
         self.vc = ""
 
     @commands.Cog.listener()
@@ -109,9 +106,7 @@ class Music(commands.Cog):
         else:
             song = self.search_yt(query)
             if type(song) == type(True):
-                await ctx.send(
-                    "Could not download the song. Incorrect format try another keyword."
-                )
+                await ctx.send("Could not download the song. Incorrect format try another keyword.")
             else:
                 queue_embed = discord.Embed(title=f"Queue", description=f':headphones: **{song["title"]}** has '
                                       f'been added to the queue by {ctx.author.mention}', color=discord.Color.blue())
@@ -297,3 +292,38 @@ class Music(commands.Cog):
                 f""":x: Music at index {query} removed by {ctx.author.mention}"""
             )
             self.music_queue.pop(index)
+
+    @commands.command(
+        name="rep",
+        help="Restarts the current song. \U000027F2",
+        aliases=["restart"],
+    )
+    @commands.has_any_role(*voice_channel_moderator_roles)
+    async def restart(self, ctx):
+        song = []
+        if self.current_song is not None:
+            song = self.current_song[0]
+            voice_channel = ctx.author.voice.channel
+            self.music_queue.insert(0, [song, voice_channel, ctx.author.mention])
+            self.vc.stop()
+            if len(self.music_queue) > 0:
+                self.is_playing = True
+
+                m_url = self.music_queue[0][0]["source"]
+
+                if self.vc == "" or not self.vc.is_connected() or self.vc == None:
+                    self.vc = await self.music_queue[0][1].connect()
+                    await ctx.send("No music added")
+                else:
+                    await self.vc.move_to(self.music_queue[0][1])
+
+                    await ctx.send(f""":repeat: Replaying **{self.music_queue[0][0]['title']}**
+                         -- requested by {self.music_queue[0][2]}""")
+
+                    self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+                    self.current_song = self.music_queue.pop(0)
+
+        else:
+            self.is_playing = False
+            self.current_song = None
+            await ctx.send(f""":x: No music playing""")
