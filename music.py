@@ -96,8 +96,8 @@ class Music(commands.Cog):
             self.current_song = None
 
     @cog_ext.cog_slash(name="play", description="Plays a selected song from youtube \U0001F3B5", guild_ids=guild_id)
-    async def _play(self, ctx, url):  # ctx: SlashContext,
-        query = "".join(url)
+    async def _play(self, ctx, input):  # ctx: SlashContext,
+        query = "".join(input)
 
         voice_channel = ctx.author.voice.channel
         if voice_channel is None:
@@ -116,12 +116,13 @@ class Music(commands.Cog):
                 if self.is_playing is False:
                     await self.play_music(ctx)
 
-    @commands.command(
-        name="cp",
-        help="Shows the currently playing song \U0001F440",
-        aliases=["playing"],
-    )
-    async def cp(self, ctx):
+    # @commands.command(
+    #     name="cp",
+    #     help="Shows the currently playing song \U0001F440",
+    #     aliases=["playing"],
+    # )
+    @cog_ext.cog_slash(name="cp", description="Shows the currently playing song \U0001F440", guild_ids=guild_id)
+    async def _cp(self, ctx):
         msg = "No music playing" if self.current_song is None else f"""Currently Playing: 
         **{self.current_song[0]['title']}** -- added by {self.current_song[2]}\n"""
         await ctx.send(msg)
@@ -131,7 +132,8 @@ class Music(commands.Cog):
         help="Shows the music added in list/queue \U0001F440",
         aliases=["queue"],
     )
-    async def q(self, ctx):
+    @cog_ext.cog_slash(name="q", description="Shows the music added in list/queue \U0001F440", guild_ids=guild_id)
+    async def _q(self, ctx):
         retval = ""
         for (i, m) in enumerate(self.music_queue):
             retval += f"""{i + 1}. **{m[0]['title']}** -- added by {m[2]}\n"""
@@ -144,13 +146,15 @@ class Music(commands.Cog):
                                   description="No music in queue", color=discord.Color.blue())
             await ctx.send(embed=q_ret)
 
-    @commands.command(name="cq", help="Clears the queue", aliases=["clear"])
-    async def cq(self, ctx):
+    @cog_ext.cog_slash(name="cq", description="Clears the queue", guild_ids=guild_id)
+    # @commands.command(name="cq", help="Clears the queue", aliases=["clear"])
+    async def _cq(self, ctx):
         self.music_queue = []
         await ctx.send("""***Queue cleared !***""")
 
-    @commands.command(name="shuffle", help="Shuffles the queue")
-    async def shuffle(self, ctx):
+    # @commands.command(name="shuffle", help="Shuffles the queue")
+    @cog_ext.cog_slash(name="shuffle", description="Shuffles the queue", guild_ids=guild_id)
+    async def _shuffle(self, ctx):
         shuffle(self.music_queue)
         await ctx.send("""***Queue shuffled !***""")
 
@@ -165,12 +169,13 @@ class Music(commands.Cog):
             self.vc.stop()
             await self.play_music(ctx)
 
-    @commands.command(
-        name="voteskip",
-        help="Vote to skip the current song being played",
-        aliases=["vs"],
-    )
-    async def voteskip(self, ctx):
+    # @commands.command(
+    #     name="voteskip",
+    #     help="Vote to skip the current song being played",
+    #     aliases=["vs"],
+    # )
+    @cog_ext.cog_slash(name="voteskip", description="Vote to skip the current song being played", guild_ids=guild_id)
+    async def _voteskip(self, ctx):
         if ctx.voice_client is None:
             return
         num_members = len(ctx.voice_client.channel.members) - 1
@@ -194,12 +199,14 @@ class Music(commands.Cog):
             await ctx.send("""**Tschüss**""")
             await self.vc.disconnect(force=True)
 
-    @commands.command(
-        name="pn", help="Moves the song to the top of the queue \U0001F4A5"
-    )
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def playnext(self, ctx, *args):
-        query = " ".join(args)
+    # @commands.command(
+    #     name="pn", help="Moves the song to the top of the queue \U0001F4A5"
+    # )
+    # @commands.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="pn", description="Moves the song to the top of the queue \U0001F4A5",
+                       guild_ids=guild_id)
+    async def _playnext(self, ctx, args):
+        query = "".join(args)
 
         voice_channel = ctx.author.voice.channel
         if voice_channel is None:
@@ -245,9 +252,11 @@ class Music(commands.Cog):
 
     """Pause the currently playing song."""
 
-    @commands.command(name="pause", help="Pause the currently playing song")
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def pause(self, ctx):
+    # @commands.command(name="pause", help="Pause the currently playing song")
+    # @commands.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="pause", description="Pause the currently playing song",
+                       guild_ids=guild_id)
+    async def _pause(self, ctx):
         vc = ctx.voice_client
 
         if not vc or not vc.is_playing():
@@ -260,9 +269,11 @@ class Music(commands.Cog):
 
     """Resume the currently playing song."""
 
-    @commands.command(name="resume", help="Resume the currently playing song")
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def resume(self, ctx):
+    # @commands.command(name="resume", help="Resume the currently playing song")
+    # @commands.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="resume", description="Resume the currently playing song",
+                       guild_ids=guild_id)
+    async def _resume(self, ctx):
         vc = ctx.voice_client
 
         if not vc or vc.is_playing():
@@ -273,14 +284,16 @@ class Music(commands.Cog):
         vc.resume()
         await ctx.send(f":play_pause:  {ctx.author.mention} Resumed the song!")
 
-    @commands.command(
-        name="r",
-        help="removes song from queue at index given. \U0001F4A9",
-        aliases=["remove"],
-    )
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def remove(self, ctx, *args):
-        query = "".join(*args)
+    # @commands.command(
+    #     name="r",
+    #     help="removes song from queue at index given. \U0001F4A9",
+    #     aliases=["remove"],
+    # )
+    # @commands.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="remove", description="Removes song from queue at index given. \U0001F4A9",
+                       guild_ids=guild_id)
+    async def _remove(self, ctx, args):
+        query = "".join(args)
         index = 0
         negative = True if (query[0] == "-") else False
         if not negative:
@@ -299,13 +312,14 @@ class Music(commands.Cog):
             )
             self.music_queue.pop(index)
 
-    @commands.command(
-        name="rep",
-        help="Restarts the current song. \U000027F2",
-        aliases=["restart"],
-    )
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def restart(self, ctx):
+    # @commands.command(
+    #     name="rep",
+    #     help="Restarts the current song. \U000027F2",
+    #     aliases=["restart"],
+    # )
+    # @commands.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="restart", description="Restarts the current song. \U000027F2", guild_ids=guild_id)
+    async def _restart(self, ctx):
         song = []
         if self.current_song is not None:
             song = self.current_song[0]
