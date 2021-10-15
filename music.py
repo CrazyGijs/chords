@@ -112,10 +112,9 @@ class Music(commands.Cog):
                 queue_embed = discord.Embed(title=f"Queue",
                                             description=f':headphones: **{song["title"]}** has been added to the queue '
                                                         f'by {ctx.author.mention}', color=discord.Color.blue())
-                self.music_queue.append(
-                    [song, voice_channel, ctx.author.mention])
-                if len(self.music_queue) > 1:
-                    await ctx.send(embed=queue_embed)
+                self.music_queue.append([song, voice_channel, ctx.author.mention])
+                # if len(self.music_queue) > 1:
+                await ctx.send(embed=queue_embed)
                 if self.is_playing is False:
                     await self.play_music(ctx)
 
@@ -140,9 +139,11 @@ class Music(commands.Cog):
             retval += f"""{i+1}. **{m[0]['title']}** -- added by {m[2]}\n"""
 
         if retval != "":
-            await ctx.send(retval)
+            embed_return = discord.Embed(title="Queue", description=retval)
+            await ctx.send(embed_return)
         else:
-            await ctx.send("No music in queue")
+            await ctx.send(discord.Embed(title=f"Queue",
+                                         description="No music in queue", color=discord.Color.blue()))
 
     @commands.command(name="cq", help="Clears the queue", aliases=["clear"])
     async def cq(self, ctx):
