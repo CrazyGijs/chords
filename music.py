@@ -96,8 +96,8 @@ class Music(commands.Cog):
             self.current_song = None
 
     @cog_ext.cog_slash(name="play", description="Plays a selected song from youtube \U0001F3B5", guild_ids=guild_id)
-    async def _play(self, ctx: SlashContext, *args):
-        query = " ".join(args)
+    async def _play(self, ctx, url):  # ctx: SlashContext,
+        query = " ".join(url)
 
         voice_channel = ctx.author.voice.channel
         if voice_channel is None:
@@ -125,7 +125,7 @@ class Music(commands.Cog):
         msg = "No music playing" if self.current_song is None else f"""Currently Playing: 
         **{self.current_song[0]['title']}** -- added by {self.current_song[2]}\n"""
         await ctx.send(msg)
-    
+
     @commands.command(
         name="q",
         help="Shows the music added in list/queue \U0001F440",
@@ -134,14 +134,14 @@ class Music(commands.Cog):
     async def q(self, ctx):
         retval = ""
         for (i, m) in enumerate(self.music_queue):
-            retval += f"""{i+1}. **{m[0]['title']}** -- added by {m[2]}\n"""
+            retval += f"""{i + 1}. **{m[0]['title']}** -- added by {m[2]}\n"""
 
         if retval != "":
             embed_return = discord.Embed(title="Queue", description=retval)
             await ctx.send(embed=embed_return)
         else:
             q_ret = discord.Embed(title=f"Queue",
-                                        description="No music in queue", color=discord.Color.blue())
+                                  description="No music in queue", color=discord.Color.blue())
             await ctx.send(embed=q_ret)
 
     @commands.command(name="cq", help="Clears the queue", aliases=["clear"])
@@ -221,7 +221,7 @@ class Music(commands.Cog):
                 if votes >= voters / 2:
                     self.music_queue.insert(
                         0,
-                        [song, voice_channel,ctx.author.mention]
+                        [song, voice_channel, ctx.author.mention]
                     )
                     await ctx.send(
                         f":headphones: **{song['title']}** will be added played next!"
@@ -235,7 +235,7 @@ class Music(commands.Cog):
                     )
 
                 if self.is_playing is False or (
-                    self.vc == "" or not self.vc.is_connected() or self.vc == None
+                        self.vc == "" or not self.vc.is_connected() or self.vc == None
                 ):
                     await self.play_music(ctx)
 
