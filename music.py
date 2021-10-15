@@ -1,6 +1,8 @@
 import asyncio
 import discord
 from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext, cog_ext
+from discord.ext.commands import Bot
 from discord.ext.commands.core import command
 
 from random import shuffle
@@ -8,9 +10,10 @@ from youtube_dl import YoutubeDL
 
 from roles import voice_channel_moderator_roles
 
+guild_id = [378542493547102209]
 
 class Music(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
         self.is_playing = False
@@ -93,11 +96,7 @@ class Music(commands.Cog):
             self.is_playing = False
             self.current_song = None
 
-    @commands.command(
-        name="p",
-        help="Plays a selected song from youtube \U0001F3B5",
-        aliases=["play"],
-    )
+    @cog_ext.cog_slash(name="play", description="Plays a selected song from youtube \U0001F3B5", guild_ids=guild_id)
     async def p(self, ctx, *args):
         query = " ".join(args)
 
@@ -189,7 +188,7 @@ class Music(commands.Cog):
     @commands.has_any_role(*voice_channel_moderator_roles)
     async def leave(self, ctx, *args):
         if self.vc.is_connected():
-            await ctx.send("""**Bye Bye **:slight_smile:""")
+            await ctx.send("""**Tschüss**""")
             await self.vc.disconnect(force=True)
 
     @commands.command(
