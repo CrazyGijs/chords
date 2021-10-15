@@ -4,16 +4,16 @@ from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext, cog_ext
 from discord.ext.commands import Bot
 from discord.ext.commands.core import command
-
 from random import shuffle
 from youtube_dl import YoutubeDL
-
 from roles import voice_channel_moderator_roles
 
 guild_id = [378542493547102209]
 
+
 class Music(commands.Cog):
     def __init__(self, bot: Bot):
+        super().__init__(help_command=None)
         self.bot = bot
 
         self.is_playing = False
