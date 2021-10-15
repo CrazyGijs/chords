@@ -127,11 +127,11 @@ class Music(commands.Cog):
         **{self.current_song[0]['title']}** -- added by {self.current_song[2]}\n"""
         await ctx.send(msg)
 
-    @commands.command(
-        name="q",
-        help="Shows the music added in list/queue \U0001F440",
-        aliases=["queue"],
-    )
+    # @commands.command(
+    #     name="q",
+    #     help="Shows the music added in list/queue \U0001F440",
+    #     aliases=["queue"],
+    # )
     @cog_ext.cog_slash(name="q", description="Shows the music added in list/queue \U0001F440", guild_ids=guild_id)
     async def _q(self, ctx):
         retval = ""
@@ -203,7 +203,7 @@ class Music(commands.Cog):
     #     name="pn", help="Moves the song to the top of the queue \U0001F4A5"
     # )
     # @commands.has_any_role(*voice_channel_moderator_roles)
-    @cog_ext.cog_slash(name="pn", description="Moves the song to the top of the queue \U0001F4A5",
+    @cog_ext.cog_slash(name="playnext", description="Moves the song to the top of the queue \U0001F4A5",
                        guild_ids=guild_id)
     async def _playnext(self, ctx, args):
         query = "".join(args)
