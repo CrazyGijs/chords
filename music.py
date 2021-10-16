@@ -128,13 +128,12 @@ class Music(commands.Cog):
         msg_embed = discord.Embed(title='Now playing', description=msg)
         await ctx.send(embed=msg_embed)
 
-    # @commands.command(
-    #     name="q",
-    #     help="Shows the music added in list/queue \U0001F440",
-    #     aliases=["queue"],
-    # )
-    @cog_ext.cog_slash(name="q", description="Shows the music added in list/queue \U0001F440", guild_ids=guild_id)
-    async def _q(self, ctx):
+    @commands.command(
+        name="q",
+        help="Shows the music added in list/queue \U0001F440",
+        aliases=["queue"],
+    )
+    async def q(self, ctx):
         retval = ""
         for (i, m) in enumerate(self.music_queue):
             retval += f"""{i + 1}. **{m[0]['title']}** -- added by {m[2]}\n"""
@@ -289,18 +288,16 @@ class Music(commands.Cog):
 
         vc.resume()
         await ctx.send(embed=discord.Embed(title='Resume', description=f':play_pause:  '
-                                                                            f'{ctx.author.mention} Resumed the song!'))
+                                                                       f'{ctx.author.mention} Resumed the song!'))
 
-    # @commands.command(
-    #     name="r",
-    #     help="removes song from queue at index given. \U0001F4A9",
-    #     aliases=["remove"],
-    # )
-    # @commands.has_any_role(*voice_channel_moderator_roles)
-    @cog_ext.cog_slash(name="remove", description="Removes song from queue at index given. \U0001F4A9",
-                       guild_ids=guild_id)
-    async def _remove(self, ctx, args):
-        query = "".join(args)
+    @commands.command(
+        name="r",
+        help="removes song from queue at index given. \U0001F4A9",
+        aliases=["remove"],
+    )
+    @commands.has_any_role(*voice_channel_moderator_roles)
+    async def remove(self, ctx, *args):
+        query = "".join(*args)
         index = 0
         negative = True if (query[0] == "-") else False
         if not negative:
@@ -346,7 +343,8 @@ class Music(commands.Cog):
 
                     await ctx.send(embed=discord.Embed(
                         title='Restart',
-                        description=f":repeat: Replaying **{self.music_queue[0][0]['title']}** -- requested by {self.music_queue[0][2]}"))
+                        description=f":repeat: Replaying **{self.music_queue[0][0]['title']}**"
+                                    f" -- requested by {self.music_queue[0][2]}"))
 
                     self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
                     self.current_song = self.music_queue.pop(0)
