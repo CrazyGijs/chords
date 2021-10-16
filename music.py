@@ -23,24 +23,24 @@ class Music(commands.Cog):
                                "options": "-vn"}
         self.vc = ""
 
-    @commands.Cog.listener()
-    async def on_voice_state_update(self, member, before, after):
-
-        if not member.id == self.bot.user.id:
-            return
-
-        elif before.channel is None:
-            voice = self.vc
-            time = 0
-            while True:
-                await asyncio.sleep(1)
-                time = time + 1
-                if voice.is_playing:
-                    time = 0
-                if time == 20:
-                    await voice.disconnect()
-                if not voice.is_connected():
-                    break
+    # @commands.Cog.listener()
+    # async def on_voice_state_update(self, member, before, after):
+    #
+    #     if not member.id == self.bot.user.id:
+    #         return
+    #
+    #     elif before.channel is None:
+    #         voice = self.vc
+    #         time = 0
+    #         while True:
+    #             await asyncio.sleep(1)
+    #             time = time + 1
+    #             if voice.is_playing:
+    #                 time = 0
+    #             if time == 20:
+    #                 await voice.disconnect()
+    #             if not voice.is_connected():
+    #                 break
 
     def search_yt(self, item):
         with YoutubeDL(self.YDL_OPTIONS) as ydl:
