@@ -12,7 +12,7 @@ intents.members = True
 
 with open('prefix.txt', 'r') as fp:
     prefix = fp.read()
-bot = commands.Bot(command_prefix=prefix, help_command=True, self_bot=True, intents=intents)
+bot = commands.Bot(command_prefix=prefix, help_command=None, self_bot=True, intents=intents)
 slash = SlashCommand(bot, sync_commands=True)
 bot.add_cog(Music(bot))
 # bot.add_cog(Help(bot))
