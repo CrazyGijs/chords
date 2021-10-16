@@ -1,16 +1,18 @@
 import asyncio
 import discord
 from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext, cog_ext
+from discord.ext.commands import Bot
 from discord.ext.commands.core import command
-
 from random import shuffle
 from youtube_dl import YoutubeDL
-
 from roles import voice_channel_moderator_roles
+
+guild_id = [378542493547102209]
 
 
 class Music(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
 
         self.is_playing = False
@@ -93,13 +95,9 @@ class Music(commands.Cog):
             self.is_playing = False
             self.current_song = None
 
-    @commands.command(
-        name="p",
-        help="Plays a selected song from youtube \U0001F3B5",
-        aliases=["play"],
-    )
-    async def p(self, ctx, *args):
-        query = " ".join(args)
+    @cog_ext.cog_slash(name="play", description="Plays a selected song from youtube \U0001F3B5", guild_ids=guild_id)
+    async def _p(self, ctx, search):  # ctx: SlashContext,
+        query = "".join(search)
 
         voice_channel = ctx.author.voice.channel
         if voice_channel is None:
@@ -109,26 +107,27 @@ class Music(commands.Cog):
             if type(song) == type(True):
                 await ctx.send("Could not download the song. Incorrect format try another keyword.")
             else:
-                queue_embed = discord.Embed(title=f"Queue",
-                                            description=f':headphones: **{song["title"]}** has been added to the queue '
-                                                        f'by {ctx.author.mention}', color=discord.Color.blue())
+                # queue_embed =
                 self.music_queue.append([song, voice_channel, ctx.author.mention])
                 # if len(self.music_queue) > 1:
-                await ctx.send(embed=queue_embed)
+                # await ctx.send(embed=discord.Embed(title=f"Queue",
+                #                             description=f':headphones: **{song["title"]}** has been added to the queue '
+                #                                         f'by {ctx.author.mention}', color=discord.Color.blue()))
                 if self.is_playing is False:
                     await self.play_music(ctx)
 
-    @commands.command(
-        name="cp",
-        help="Shows the currently playing song \U0001F440",
-        aliases=["playing"],
-    )
-    async def cp(self, ctx):
+    # @commands.command(
+    #     name="cp",
+    #     help="Shows the currently playing song \U0001F440",
+    #     aliases=["playing"],
+    # )
+    @cog_ext.cog_slash(name="cp", description="Shows the currently playing song \U0001F440", guild_ids=guild_id)
+    async def _cp(self, ctx):
         msg = "No music playing" if self.current_song is None else f"""Currently Playing: 
         **{self.current_song[0]['title']}** -- added by {self.current_song[2]}\n"""
         msg_embed = discord.Embed(title='Now playing', description=msg)
         await ctx.send(embed=msg_embed)
-    
+
     @commands.command(
         name="q",
         help="Shows the music added in list/queue \U0001F440",
@@ -137,43 +136,47 @@ class Music(commands.Cog):
     async def q(self, ctx):
         retval = ""
         for (i, m) in enumerate(self.music_queue):
-            retval += f"""{i+1}. **{m[0]['title']}** -- added by {m[2]}\n"""
+            retval += f"""{i + 1}. **{m[0]['title']}** -- added by {m[2]}\n"""
 
         if retval != "":
             embed_return = discord.Embed(title="Queue", description=retval)
             await ctx.send(embed=embed_return)
         else:
             q_ret = discord.Embed(title=f"Queue",
-                                        description="No music in queue", color=discord.Color.blue())
+                                  description="No music in queue", color=discord.Color.blue())
             await ctx.send(embed=q_ret)
 
-    @commands.command(name="cq", help="Clears the queue", aliases=["clear"])
-    async def cq(self, ctx):
+    @cog_ext.cog_slash(name="cq", description="Clears the queue", guild_ids=guild_id)
+    # @commands.command(name="cq", help="Clears the queue", aliases=["clear"])
+    async def _cq(self, ctx):
         self.music_queue = []
         clear_embed = discord.Embed(title='Queue', description='***Queue cleared!***')
         await ctx.send(embed=clear_embed)
 
-    @commands.command(name="shuffle", help="Shuffles the queue")
-    async def shuffle(self, ctx):
+    # @commands.command(name="shuffle", help="Shuffles the queue")
+    @cog_ext.cog_slash(name="shuffle", description="Shuffles the queue", guild_ids=guild_id)
+    async def _shuffle(self, ctx):
         shuffle(self.music_queue)
         await ctx.send(embed=discord.Embed(title='Shuffle', description='***Queue shuffled!***'))
 
-    @commands.command(
-        name="s", help="Skips the current song being played", aliases=["skip"]
-    )
-    async def skip(self, ctx):
+    # @commands.command(
+    #     name="s", help="Skips the current song being played", aliases=["skip"]
+    # )
+    @cog_ext.cog_slash(name="skip", description="Skips the current song being played", guild_ids=guild_id)
+    async def _skip(self, ctx):
         if self.vc != "" and self.vc:
             await ctx.send(embed=discord.Embed(title='Skip', description='***Skipped current song!***'))
             self.skip_votes = set()
             self.vc.stop()
             await self.play_music(ctx)
 
-    @commands.command(
-        name="voteskip",
-        help="Vote to skip the current song being played",
-        aliases=["vs"],
-    )
-    async def voteskip(self, ctx):
+    # @commands.command(
+    #     name="voteskip",
+    #     help="Vote to skip the current song being played",
+    #     aliases=["vs"],
+    # )
+    @cog_ext.cog_slash(name="voteskip", description="Vote to skip the current song being played", guild_ids=guild_id)
+    async def _voteskip(self, ctx):
         if ctx.voice_client is None:
             return
         num_members = len(ctx.voice_client.channel.members) - 1
@@ -184,23 +187,28 @@ class Music(commands.Cog):
                                                                              f"({votes}/{num_members})."))
             await self.skip(ctx)
 
-    @commands.command(
-        name="l",
-        help="Commands the bot to leave the voice channel \U0001F634",
-        aliases=["leave"],
-    )
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def leave(self, ctx, *args):
+    # @commands.command(
+    #     name="l",
+    #     help="Commands the bot to leave the voice channel \U0001F634",
+    #     aliases=["leave"],
+    # )
+
+    # @cog_ext.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="leave", description="Commands the bot to leave the voice channel \U0001F634",
+                       guild_ids=guild_id)
+    async def _leave(self, ctx):
         if self.vc.is_connected():
             await ctx.send("""**Tschüss**""")
             await self.vc.disconnect(force=True)
 
-    @commands.command(
-        name="pn", help="Moves the song to the top of the queue \U0001F4A5"
-    )
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def playnext(self, ctx, *args):
-        query = " ".join(args)
+    # @commands.command(
+    #     name="pn", help="Moves the song to the top of the queue \U0001F4A5"
+    # )
+    # @commands.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="playnext", description="Moves the song to the top of the queue \U0001F4A5",
+                       guild_ids=guild_id)
+    async def _playnext(self, ctx, args):
+        query = "".join(args)
 
         voice_channel = ctx.author.voice.channel
         if voice_channel is None:
@@ -240,15 +248,17 @@ class Music(commands.Cog):
                     )
 
                 if self.is_playing is False or (
-                    self.vc == "" or not self.vc.is_connected() or self.vc == None
+                        self.vc == "" or not self.vc.is_connected() or self.vc == None
                 ):
                     await self.play_music(ctx)
 
     """Pause the currently playing song."""
 
-    @commands.command(name="pause", help="Pause the currently playing song")
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def pause(self, ctx):
+    # @commands.command(name="pause", help="Pause the currently playing song")
+    # @commands.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="pause", description="Pause the currently playing song",
+                       guild_ids=guild_id)
+    async def _pause(self, ctx):
         vc = ctx.voice_client
 
         if not vc or not vc.is_playing():
@@ -263,9 +273,11 @@ class Music(commands.Cog):
 
     """Resume the currently playing song."""
 
-    @commands.command(name="resume", help="Resume the currently playing song")
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def resume(self, ctx):
+    # @commands.command(name="resume", help="Resume the currently playing song")
+    # @commands.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="resume", description="Resume the currently playing song",
+                       guild_ids=guild_id)
+    async def _resume(self, ctx):
         vc = ctx.voice_client
 
         if not vc or vc.is_playing():
@@ -304,13 +316,14 @@ class Music(commands.Cog):
             )
             self.music_queue.pop(index)
 
-    @commands.command(
-        name="rep",
-        help="Restarts the current song. \U000027F2",
-        aliases=["restart"],
-    )
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def restart(self, ctx):
+    # @commands.command(
+    #     name="rep",
+    #     help="Restarts the current song. \U000027F2",
+    #     aliases=["restart"],
+    # )
+    # @commands.has_any_role(*voice_channel_moderator_roles)
+    @cog_ext.cog_slash(name="restart", description="Restarts the current song. \U000027F2", guild_ids=guild_id)
+    async def _restart(self, ctx):
         song = []
         if self.current_song is not None:
             song = self.current_song[0]

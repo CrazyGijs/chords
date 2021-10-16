@@ -1,21 +1,22 @@
 import discord
 from discord.ext import commands
+from discord_slash import cog_ext
 
 
 class Help(commands.Cog):
     """Cog for the help command."""
-
     def __init__(self, bot):
         self.bot = bot
         self.bot_cogs = self.bot.cogs
 
-    @commands.command(name="help", aliases=["h"])
-    async def _help(self, ctx, cog_query: str = "Music"):
+    # @commands.command(name="help", aliases=["h"])
+    @cog_ext.cog_slash(name="help", description="Show main commands of Mr. Proper")
+    async def _help(self, ctx):  # , cog_query: str = "Music"):
         """Returns all not hidden commands from a cog.
         Default query is set to 'Music' but other cogs are supported too"""
 
         try:
-            cog = self.bot_cogs[cog_query]
+            cog = self.bot_cogs["Music"]
         except KeyError:
             query_error_embed = discord.Embed(title="Query Error. Perhaps you mean:",
                                               description=f"{', '.join(self.bot_cogs.keys())}.",
