@@ -158,7 +158,7 @@ class Music(commands.Cog):
     @cog_ext.cog_slash(name="shuffle", description="Shuffles the queue", guild_ids=guild_id)
     async def _shuffle(self, ctx):
         shuffle(self.music_queue)
-        await ctx.send(embed=discord.Embed(title='Shuffle', description='***Queue shuffled!***')
+        await ctx.send(embed=discord.Embed(title='Shuffle', description='***Queue shuffled!***'))
 
     # @commands.command(
     #     name="s", help="Skips the current song being played", aliases=["skip"]
