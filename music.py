@@ -59,10 +59,11 @@ class Music(commands.Cog):
 
             self.current_song = self.music_queue.pop(0)
 
-            self.vc.play(
-                discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS),
-                after=lambda e: self.play_next(),
-            )
+            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
+            play_embed = discord.Embed(title=f"Now playing",
+                                       description=f":arrow_forward: Playing **{self.music_queue[0][0]['title']}** -- "
+                                                   f"requested by {self.music_queue[0][2]}", color=discord.Color.blue())
+            await ctx.send(embed=play_embed)
         else:
             self.is_playing = False
             self.current_song = None
