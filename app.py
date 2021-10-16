@@ -22,7 +22,8 @@ bot.add_cog(Help(bot))
 
 @bot.event
 async def on_ready():
-    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
-    print('------')
+    a = f'Logged in as {bot.user} (ID: {bot.user.id})'
+    print(a)
+    print('-' * len(a))
 
 bot.run(os.getenv("TOKEN"))
