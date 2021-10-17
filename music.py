@@ -155,10 +155,11 @@ class Music(commands.Cog):
         name="s", help="Skips the current song being played", aliases=["skip"]
     )
     async def skip(self, ctx):
-        if self.vc != "" and self.vc.is_playing() is True:
+        vc = ctx.voice_client
+        if self.vc != "" and vc.is_playing() is True:
             await ctx.send(embed=discord.Embed(title='Skip', description='***Skipped current song!***'))
             self.skip_votes = set()
-            await self.vc.stop()  # check to see if this makes the skip command error free
+            vc.stop()  # check to see if this makes the skip command error free
             await self.play_music(ctx)
         else:
             await ctx.send(embed=discord.Embed(title='Skip', description='No song playing!'))
