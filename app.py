@@ -25,6 +25,7 @@ async def on_ready():
     a = f'Logged in as {bot.user} (ID: {bot.user.id})'
     print(a)
     print('-' * len(a))
-    await bot.change_presence(activity=discord.Game('Tijd voor matige muziek.'))
+    # await bot.change_presence(activity=discord.Game('Tijd voor matige muziek.'))
+    await bot.change_presence(activity=discord.Activity(name='Matige muziek', type=discord.ActivityType.listening))
 
 bot.run(os.getenv("TOKEN"))
