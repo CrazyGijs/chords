@@ -81,9 +81,8 @@ class Music(commands.Cog):
             vc = ctx.voice_client
             if vc.is_playing() is True:
                 vc.stop()
-            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
             self.current_song = self.music_queue.pop(0)
-
+            self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
         else:
             self.is_playing = False
             self.current_song = None
