@@ -119,7 +119,7 @@ class Music(commands.Cog):
     async def cp(self, ctx):
         msg = "No music playing" if self.current_song is None else f"""Currently Playing: 
         **{self.current_song[0]['title']}** -- added by {self.current_song[2]}\n"""
-        msg_embed = discord.Embed(title='Now playing', description=msg)
+        msg_embed = discord.Embed(title='Now playing', description=msg, color=discord.Color.blue())
         await ctx.send(embed=msg_embed)
     
     @commands.command(
@@ -133,7 +133,7 @@ class Music(commands.Cog):
             retval += f"""{i+1}. **{m[0]['title']}** -- added by {m[2]}\n"""
 
         if retval != "":
-            embed_return = discord.Embed(title="Queue", description=retval)
+            embed_return = discord.Embed(title="Queue", description=retval, color=discord.Color.blue())
             await ctx.send(embed=embed_return)
         else:
             q_ret = discord.Embed(title=f"Queue",
@@ -143,7 +143,7 @@ class Music(commands.Cog):
     @commands.command(name="cq", help="Clears the queue", aliases=["clear"])
     async def cq(self, ctx):
         self.music_queue = []
-        clear_embed = discord.Embed(title='Queue', description='***Queue cleared!***')
+        clear_embed = discord.Embed(title='Queue', description='***Queue cleared!***', color=discord.Color.blue())
         await ctx.send(embed=clear_embed)
 
     @commands.command(name="shuffle", help="Shuffles the queue")
@@ -157,12 +157,14 @@ class Music(commands.Cog):
     async def skip(self, ctx):
         vc = ctx.voice_client
         if self.vc != "" and vc.is_playing() is True:
-            await ctx.send(embed=discord.Embed(title='Skip', description='***Skipped current song!***'))
+            await ctx.send(embed=discord.Embed(title='Skip', description='***Skipped current song!***',
+                                               color=discord.Color.blue()))
             self.skip_votes = set()
             vc.stop()  # check to see if this makes the skip command error free
             await self.play_music(ctx)
         else:
-            await ctx.send(embed=discord.Embed(title='Skip', description='No song playing!'))
+            await ctx.send(embed=discord.Embed(title='Skip', description='No song playing!',
+                                               color=discord.Color.blue()))
 
     @commands.command(
         name="voteskip",
@@ -176,8 +178,9 @@ class Music(commands.Cog):
         self.skip_votes.add(ctx.author.id)
         votes = len(self.skip_votes)
         if votes >= num_members / 2:
-            await ctx.send(embed=discord.Embed(title='Voteskip', description=f"Vote passed by majority "
-                                                                             f"({votes}/{num_members})."))
+            await ctx.send(embed=discord.Embed(title='Voteskip',
+                                               description=f"Vote passed by majority ({votes}/{num_members}).",
+                                               color=discord.Color.blue()))
             await self.skip(ctx)
 
     @commands.command(
@@ -249,13 +252,15 @@ class Music(commands.Cog):
 
         if not vc or not vc.is_playing():
             return await ctx.send(embed=discord.Embed(title='Pause',
-                                                      description="I am currently playing nothing!", delete_after=20))
+                                                      description="I am currently playing nothing!",
+                                                      color=discord.Color.blue(), delete_after=20))
         elif vc.is_paused():
             return
 
         vc.pause()
         await ctx.send(embed=discord.Embed(title='Pause',
-                                           description=f":pause_button:  {ctx.author.mention} Paused the song!"))
+                                           description=f":pause_button:  {ctx.author.mention} Paused the song!",
+                                           color=discord.Color.blue()))
 
     """Resume the currently playing song."""
 
@@ -266,13 +271,15 @@ class Music(commands.Cog):
 
         if not vc or vc.is_playing():
             return await ctx.send(embed=discord.Embed(title='Resume', description="I am already playing a song!",
+                                                      color=discord.Color.blue(),
                                                       delete_after=20))
         elif not vc.is_paused():
             return
 
         vc.resume()
-        await ctx.send(embed=discord.Embed(title='Resume', description=f':play_pause:  '
-                                                                       f'{ctx.author.mention} Resumed the song!'))
+        await ctx.send(embed=discord.Embed(title='Resume',
+                                           description=f':play_pause: {ctx.author.mention} Resumed the song!',
+                                           color=discord.Color.blue()))
 
     @commands.command(
         name="r",
@@ -320,14 +327,15 @@ class Music(commands.Cog):
 
                 if self.vc == "" or not self.vc.is_connected() or self.vc == None:
                     self.vc = await self.music_queue[0][1].connect()
-                    await ctx.send(embed=discord.Embed(title='Restart', description="No music added"))
+                    await ctx.send(embed=discord.Embed(title='Restart', description="No music added",
+                                                       color=discord.Color.blue()))
                 else:
                     await self.vc.move_to(self.music_queue[0][1])
 
                     await ctx.send(embed=discord.Embed(
                         title='Restart',
                         description=f":repeat: Replaying **{self.music_queue[0][0]['title']}**"
-                                    f" -- requested by {self.music_queue[0][2]}"))
+                                    f" -- requested by {self.music_queue[0][2]}", color=discord.Color.blue()))
 
                     self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
                     self.current_song = self.music_queue.pop(0)
@@ -335,4 +343,5 @@ class Music(commands.Cog):
         else:
             self.is_playing = False
             self.current_song = None
-            await ctx.send(embed=discord.Embed(title='Restart', description=':x: No music playing'))
+            await ctx.send(embed=discord.Embed(title='Restart', description=':x: No music playing',
+                                               color=discord.Color.blue()))
