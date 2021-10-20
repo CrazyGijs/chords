@@ -15,7 +15,7 @@ class Music(commands.Cog):
         self.current_song = None
         self.music_queue = []
         self.skip_votes = set()
-
+        self.loop = False
         self.YDL_OPTIONS = {"format": "bestaudio", "noplaylist": "True", "cookiefile": "cookies.txt"}
         self.FFMPEG_OPTIONS = {"before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
                                "options": "-vn"}
@@ -56,7 +56,8 @@ class Music(commands.Cog):
             m_url = self.music_queue[0][0]["source"]
 
             self.current_song = self.music_queue.pop(0)
-
+            if self.loop is True:
+                self.music_queue.append(self.current_song)
             self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
 
         else:
@@ -83,6 +84,8 @@ class Music(commands.Cog):
             #     vc.stop()
             self.vc.play(discord.FFmpegPCMAudio(m_url, **self.FFMPEG_OPTIONS), after=lambda e: self.play_next())
             self.current_song = self.music_queue.pop(0)
+            if self.loop is True:
+                self.music_queue.append(self.current_song)
 
         else:
             self.is_playing = False
@@ -196,56 +199,55 @@ class Music(commands.Cog):
             await ctx.send("""**Tschüss**""")
             await self.vc.disconnect(force=True)
 
-    @commands.command(
-        name="pn", help="Moves the song to the top of the queue \U0001F4A5"
-    )
-    @commands.has_any_role(*voice_channel_moderator_roles)
-    async def playnext(self, ctx, *args):
-        query = " ".join(args)
+    # @commands.command(
+    #     name="pn", help="Moves the song to the top of the queue \U0001F4A5"
+    # )
+    # @commands.has_any_role(*voice_channel_moderator_roles)
+    # async def playnext(self, ctx, *args):
+    #     query = " ".join(args)
+    #
+    #     voice_channel = ctx.author.voice.channel
+    #     if voice_channel is None:
+    #         await ctx.send("Connect to a voice channel")
+    #     else:
+    #         song = self.search_yt(query)
+    #         if type(song) == type(True):
+    #             await ctx.send(
+    #                 "Could not download the song. Incorrect format try another keyword."
+    #             )
+    #         else:
+    #             vote_message = await ctx.send(
+    #                 f":headphones: **{song['title']}** will be added to the top of the queue by {ctx.author.mention}\n"
+    #                 "You have 30 seconds to vote by reacting :+1: on this message.\n"
+    #                 "If more than 50% of the people in your channel agree, the request will be up next!"
+    #             )
+    #             await vote_message.add_reaction("\U0001F44D")
+    #             await asyncio.sleep(30)
+    #             voters = len(voice_channel.members)
+    #             voters = voters - 1 if self.vc else voters
+    #             result_vote_msg = await ctx.fetch_message(vote_message.id)
+    #             votes = next(react for react in result_vote_msg.reactions if str(react.emoji) == "\U0001F44D").count - 1
+    #             if votes >= voters / 2:
+    #                 self.music_queue.insert(
+    #                     0,
+    #                     [song, voice_channel, ctx.author.mention]
+    #                 )
+    #                 await ctx.send(
+    #                     f":headphones: **{song['title']}** will be added played next!"
+    #                 )
+    #             else:
+    #                 self.music_queue.append(
+    #                     [song, voice_channel, ctx.author.mention]
+    #                 )
+    #                 await ctx.send(
+    #                     f":headphones: **{song['title']}** will be played add the end of the queue!"
+    #                 )
+    #
+    #             if self.is_playing is False or (
+    #                 self.vc == "" or not self.vc.is_connected() or self.vc == None
+    #             ):
+    #                 await self.play_music(ctx)
 
-        voice_channel = ctx.author.voice.channel
-        if voice_channel is None:
-            await ctx.send("Connect to a voice channel")
-        else:
-            song = self.search_yt(query)
-            if type(song) == type(True):
-                await ctx.send(
-                    "Could not download the song. Incorrect format try another keyword."
-                )
-            else:
-                vote_message = await ctx.send(
-                    f":headphones: **{song['title']}** will be added to the top of the queue by {ctx.author.mention}\n"
-                    "You have 30 seconds to vote by reacting :+1: on this message.\n"
-                    "If more than 50% of the people in your channel agree, the request will be up next!"
-                )
-                await vote_message.add_reaction("\U0001F44D")
-                await asyncio.sleep(30)
-                voters = len(voice_channel.members)
-                voters = voters - 1 if self.vc else voters
-                result_vote_msg = await ctx.fetch_message(vote_message.id)
-                votes = next(react for react in result_vote_msg.reactions if str(react.emoji) == "\U0001F44D").count - 1
-                if votes >= voters / 2:
-                    self.music_queue.insert(
-                        0,
-                        [song, voice_channel, ctx.author.mention]
-                    )
-                    await ctx.send(
-                        f":headphones: **{song['title']}** will be added played next!"
-                    )
-                else:
-                    self.music_queue.append(
-                        [song, voice_channel, ctx.author.mention]
-                    )
-                    await ctx.send(
-                        f":headphones: **{song['title']}** will be played add the end of the queue!"
-                    )
-
-                if self.is_playing is False or (
-                    self.vc == "" or not self.vc.is_connected() or self.vc == None
-                ):
-                    await self.play_music(ctx)
-
-    """Pause the currently playing song."""
 
     @commands.command(name="pause", help="Pause the currently playing song")
     @commands.has_any_role(*voice_channel_moderator_roles)
@@ -347,3 +349,17 @@ class Music(commands.Cog):
             self.current_song = None
             await ctx.send(embed=discord.Embed(title='Restart', description=':x: No music playing',
                                                color=discord.Color.blue()))
+
+    @commands.command(name='loop', help='Loops the queue.')
+    async def loop(self, ctx):
+        if self.loop is False:
+            await ctx.send(embed=discord.Embed(
+                        title='Loop',
+                        description='The queue is now looping!', color=discord.Color.blue()))
+            self.loop = True
+        elif self.loop is True:
+            await ctx.send(embed=discord.Embed(
+                title='Loop',
+                description='The queue is not looping anymore!', color=discord.Color.blue()))
+            self.loop = False
+
