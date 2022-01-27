@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from discord_slash import cog_ext
+#from discord_slash import cog_ext
 
 
 class Help(commands.Cog):
